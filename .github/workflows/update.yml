@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout main（干净环境）
+      # 1. Checkout main
       - name: Checkout main
         uses: actions/checkout@v4
         with:
@@ -29,32 +29,37 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. 输出到 temp_data（临时目录，不污染 main 工作区）
+      # 4. Generate JSON → temp_data
       - name: Generate domain data
         run: |
           mkdir -p temp_data
           node scripts/generate.js temp_data
 
-      # 5. 独立 clone gh-pages（干净）
-      - name: Clone gh-pages clean
+      # 5. Clone gh-pages（独立工作区）
+      - name: Clone gh-pages
         run: |
           rm -rf gh-pages
-          git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages
+          git clone --branch gh-pages \
+            https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} \
+            gh-pages
 
-      # 6. 替换 gh-pages/data 目录
+      # 6. 替换 gh-pages/data
       - name: Replace /data content
         run: |
           mkdir -p gh-pages/data
           rm -rf gh-pages/data/*
           cp -r temp_data/* gh-pages/data/
+
           cd gh-pages
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add .
           git commit -m "Auto update: $(date)" || echo "No changes"
 
-      # 7. Push 更新
+      # 7. 推送回 gh-pages（使用 Token）
       - name: Push to gh-pages
         run: |
           cd gh-pages
-          git push origin gh-pages --force
+          git push \
+            https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} \
+            gh-pages --force
