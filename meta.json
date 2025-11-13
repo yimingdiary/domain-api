@@ -1,0 +1,10 @@
+{
+  "updatedAt": "2025-11-13T11:57:19.542Z",
+  "ianaVersion": "2025111300",
+  "tldCount": 1438,
+  "pslCount": 10046,
+  "sources": {
+    "iana": "https://data.iana.org/TLD/tlds-alpha-by-domain.txt",
+    "psl": "https://publicsuffix.org/list/public_suffix_list.dat"
+  }
+}
