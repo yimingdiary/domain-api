@@ -1,1 +1,50 @@
+name: Update Domain Lists
 
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate domain data
+        run: |
+          mkdir -p temp_data
+          node scripts/generate.js temp_data   # 将 JSON 生成到 temp_data 目录
+
+      - name: Switch to gh-pages branch
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+
+      - name: Replace gh-pages content
+        run: |
+          rm -rf ./*                           # 清空 gh-pages 分支根目录
+          cp -r ../temp_data/* ./              # 把生成的 JSON 文件写入 gh-pages
+          git add .
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git commit -m "Auto update: $(date)" || echo "No changes"
+
+      - name: Push to gh-pages
+        run: |
+          git push origin gh-pages --force
