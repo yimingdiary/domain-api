@@ -21,15 +21,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout gh-pages
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: gh-pages
 
-      - name: Upload static site
+      - name: Upload entire site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./data
+          path: ./
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
