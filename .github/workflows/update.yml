@@ -1,0 +1,33 @@
+name: Update Domain Lists
+
+on:
+  schedule:
+    - cron: "0 6 * * *"    # 每天 UTC 06:00 自动更新
+  workflow_dispatch:       # 手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate domain data
+        run: npm run generate
+
+      - name: Deploy to gh-pages
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Auto update: $(date)" || echo "No changes"
+          git push origin HEAD:gh-pages --force
