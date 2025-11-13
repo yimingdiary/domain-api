@@ -13,38 +13,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. 克隆 main 分支（用于运行 Node 脚本）
       - name: Checkout main branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2. 安装 Node
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # 3. 安装依赖
       - name: Install dependencies
         run: npm install
 
+      # 4. 运行脚本并输出到 temp_data 目录
       - name: Generate domain data
         run: |
           mkdir -p temp_data
-          node scripts/generate.js temp_data   # 将 JSON 生成到 temp_data 目录
+          node scripts/generate.js temp_data
 
-      - name: Switch to gh-pages branch
+      # 5. 重新克隆 gh-pages（使用全新工作区）
+      - name: Checkout gh-pages (clean workspace)
         run: |
-          git fetch origin gh-pages
-          git checkout gh-pages
+          rm -rf gh-pages
+          git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages
 
-      - name: Replace gh-pages content
+      # 6. 用 temp_data 内容覆盖 gh-pages 分支
+        shell: bash
+
+      - name: Replace content in gh-pages
         run: |
-          rm -rf ./*                           # 清空 gh-pages 分支根目录
-          cp -r ../temp_data/* ./              # 把生成的 JSON 文件写入 gh-pages
-          git add .
+          rm -rf gh-pages/*
+          cp -r temp_data/* gh-pages/
+          cd gh-pages
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+          git add .
           git commit -m "Auto update: $(date)" || echo "No changes"
 
+      # 7. 推送到 gh-pages
       - name: Push to gh-pages
         run: |
+          cd gh-pages
           git push origin gh-pages --force
