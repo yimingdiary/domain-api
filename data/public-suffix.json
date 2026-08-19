@@ -6983,6 +6983,7 @@
   "beep.pl",
   "aiven.app",
   "aivencloud.com",
+  "*.aivencloud.com",
   "akadns.net",
   "akamai.net",
   "akamai-staging.net",
