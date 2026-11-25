@@ -1,8 +1,8 @@
 {
-  "iana_version": "2026112302",
-  "iana_last_updated": "Tue Nov 24 07:07:02 2026 UTC",
-  "psl_version": "2026-11-23_15-54-01_UTC",
+  "iana_version": "2026112402",
+  "iana_last_updated": "Wed Nov 25 07:07:01 2026 UTC",
+  "psl_version": "2026-11-25_10-02-46_UTC",
   "psl_last_updated": null,
   "tld_count": 1435,
-  "psl_count": 10472
+  "psl_count": 10487
 }
